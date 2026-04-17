@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+ <title>Felices 16 meses · Stacy & Yo</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Great+Vibes&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
+ <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+
+ <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+   background: linear-gradient(145deg, #fbe9f0 0%, #f8e3e9 40%, #fce4ec 100%);
+   min-height: 100vh;
+   font-family: 'Quicksand', sans-serif;
+   color: #4a2e3b;
+   padding: 1.5rem 1rem 3rem;
+   position: relative;
+   overflow-x: hidden;
+  }
+
+  #petals-canvas {
+   position: fixed; top: 0; left: 0;
+   width: 100%; height: 100%;
+   pointer-events: none; z-index: 1;
+  }
+
+  .content {
+   position: relative; z-index: 10;
+   max-width: 700px; margin: 0 auto;
+   backdrop-filter: blur(2px);
+  }
+
+  .fade-section { opacity: 0; animation: fadeInUp 1.2s cubic-bezier(0.2, 0.9, 0.1, 1) forwards; }
+  .section-1 { animation-delay: 0.1s; }
+  .section-2 { animation-delay: 0.4s; }
+  .section-3 { animation-delay: 0.7s; }
+  .section-4 { animation-delay: 1.0s; }
+  .section-5 { animation-delay: 1.3s; }
+
+  @keyframes fadeInUp {
+   0% { opacity: 0; transform: translateY(22px); }
+   100% { opacity: 1; transform: translateY(0); }
+  }
+
+  h1, h2, .cursive { font-family: 'Great Vibes', cursive; font-weight: 400; letter-spacing: 1px; }
+
+  h1 { font-size: 3.8rem; color: #9e5f6b; text-shadow: 2px 2px 10px rgba(180,100,110,0.2); margin-bottom: 0.3rem; line-height: 1.2; }
+  h2 { font-size: 2.6rem; color: #ac6f7c; margin-bottom: 1.2rem; }
+
+  .subtitle { font-family: 'Dancing Script', cursive; font-size: 1.8rem; color: #b16d7a; }
+
+  .name-stacy {
+   font-family: 'Great Vibes', cursive;
+   font-size: 2.6rem;
+   color: #c26575;
+   display: block;
+   margin: 0.3rem 0 0.8rem;
+   text-shadow: 1px 2px 12px rgba(200,100,115,0.25);
+   animation: heartbeat 2s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+   0%, 100% { transform: scale(1); }
+   50% { transform: scale(1.04); }
+  }
+
+  .glass-card {
+   background: rgba(255,245,248,0.6);
+   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+   border-radius: 40px 20px 40px 20px;
+   padding: 2rem 1.5rem; margin-bottom: 2.2rem;
+   box-shadow: 0 20px 40px rgba(140,70,85,0.15), 0 4px 12px rgba(0,0,0,0.05);
+   border: 1px solid rgba(230,170,180,0.4);
+   transition: transform 0.2s ease;
+  }
+
+  .counter-box {
+   display: flex; flex-wrap: wrap;
+   justify-content: center;
+   gap: 0.8rem 1.2rem;
+   margin: 1.8rem 0 0.5rem;
+  }
+
+  .counter-item { text-align: center; min-width: 75px; }
+
+  .counter-number {
+   font-family: 'Quicksand', sans-serif; font-weight: 500;
+   font-size: 3.2rem; color: #9e4a5c;
+   background: rgba(255,240,242,0.7);
+   padding: 0.3rem 0.8rem; border-radius: 40px;
+   box-shadow: inset 0 1px 4px #fff0f3, 0 6px 12px #ecc0ca;
+   border: 1px solid #f3ced6; line-height: 1.3;
+   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .counter-number.tick {
+   transform: scale(1.06);
+   color: #c2384e;
+  }
+
+  .counter-label {
+   font-size: 0.85rem; text-transform: uppercase;
+   letter-spacing: 2px; margin-top: 0.4rem;
+   color: #764b56; font-weight: 400;
+  }
+
+  .counter-item.seconds .counter-number { font-size: 2rem; color: #b8697a; }
+
+  .envelope-wrapper { perspective: 1400px; margin: 20px 0 10px; }
+
+  .envelope {
+   position: relative; width: 100%;
+   max-width: 360px; margin: 0 auto;
+   height: 220px; cursor: pointer; transition: transform 0.2s;
+  }
+  .envelope:hover { transform: scale(1.01); }
+
+  .flap {
+   position: absolute; top: 0; left: 0;
+   width: 100%; height: 100%;
+   background: #eac7cf;
+   border-radius: 12px 12px 20px 20px;
+   box-shadow: 0 10px 18px #cfa5af;
+   border: 2px solid #ddb7c0;
+   transform-origin: top;
+   transition: transform 0.65s ease-in-out;
+   z-index: 20;
+   display: flex; align-items: center; justify-content: center;
+  }
+  .flap::before { content: "💌"; font-size: 3rem; opacity: 0.9; }
+  .envelope.open .flap { transform: rotateX(180deg); box-shadow: 0 -5px 10px rgba(0,0,0,0.05); }
+
+  .letter-content {
+   position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+   background: #fff9f7; border-radius: 16px;
+   padding: 1.5rem 1.2rem;
+   box-shadow: inset 0 0 0 1px #f1d3db, 0 8px 14px rgba(170,100,110,0.2);
+   color: #4e2e39; font-family: 'Dancing Script', cursive;
+   font-size: 1.2rem; line-height: 1.6;
+   overflow-y: auto; z-index: 5;
+   border: 1px solid #ebc4ce;
+  }
+  .letter-content p { margin-bottom: 0.7rem; }
+
+  .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1.5rem; }
+
+  .gallery-item {
+   aspect-ratio: 1 / 1;
+   border-radius: 30px 10px 30px 10px;
+   overflow: hidden;
+   box-shadow: 0 12px 22px -8px rgba(130,60,80,0.2);
+   border: 2px solid #f5d2db;
+   transition: all 0.3s;
+   background: #ffe7ec;
+   position: relative;
+  }
+  .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s; }
+  .gallery-item:hover img { transform: scale(1.04); }
+
+  .magic-btn {
+   background: linear-gradient(135deg, #d99ea8 0%, #c77d8d 100%);
+   border: none; color: #2f1a20;
+   font-weight: 600; font-size: 1.8rem;
+   font-family: 'Great Vibes', cursive;
+   padding: 1.2rem 2rem; border-radius: 60px;
+   width: 100%;
+   box-shadow: 0 16px 30px -6px #c97f8e, 0 4px 0 #935f6b inset, 0 -2px 8px #ffe2e8 inset;
+   cursor: pointer; transition: 0.15s;
+   border: 1px solid #fad2db; letter-spacing: 2px; margin: 1.2rem 0;
+  }
+  .magic-btn:active { transform: scale(0.97); box-shadow: 0 6px 12px #b76e7c, 0 2px 0 #7e4b58 inset; }
+
+  .final-message {
+   text-align: center; font-size: 2rem;
+   font-family: 'Great Vibes', cursive; color: #873e50;
+   margin-top: 0.8rem; opacity: 0; transition: opacity 0.8s;
+  }
+  .final-message.show { opacity: 1; }
+
+  .music-btn {
+   position: fixed; bottom: 22px; right: 22px;
+   background: #efcfd8; border: none;
+   width: 64px; height: 64px; border-radius: 40px;
+   box-shadow: 0 8px 18px #d6a3b0, 0 2px 0 #ba8a96 inset;
+   font-size: 28px; cursor: pointer; z-index: 100;
+   backdrop-filter: blur(5px);
+   border: 1px solid #fbe3e9; color: #672e3e;
+   display: flex; flex-direction: column;
+   align-items: center; justify-content: center;
+   transition: 0.2s; gap: 2px;
+  }
+  .music-btn .music-label { font-size: 0.55rem; font-family: 'Quicksand'; letter-spacing: 0.5px; color: #9a4a5a; }
+  .music-btn.playing { background: #dbb2bd; box-shadow: 0 4px 12px #b3808e; }
+
+  .song-badge {
+   position: fixed; bottom: 100px; right: 16px;
+   background: rgba(255,240,244,0.92);
+   backdrop-filter: blur(8px);
+   border-radius: 24px; padding: 0.5rem 1rem;
+   font-size: 0.8rem; font-family: 'Dancing Script', cursive; font-size: 1rem;
+   color: #7a3e4e; border: 1px solid #f0c5cf;
+   box-shadow: 0 6px 16px rgba(180,80,100,0.15);
+   opacity: 0; transition: opacity 0.5s;
+   z-index: 99; pointer-events: none;
+   white-space: nowrap;
+  }
+  .song-badge.show { opacity: 1; }
+
+  @media (max-width: 480px) {
+   h1 { font-size: 3rem; }
+   .counter-number { font-size: 2.4rem; }
+   .gallery-grid { gap: 0.7rem; }
+   .glass-card { padding: 1.5rem 1rem; }
+   .name-stacy { font-size: 2.2rem; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: #d9a9b4; border-radius: 10px; }
+ </style>
+</head>
+<body>
+
+<canvas id="petals-canvas"></canvas>
+
+<!-- Badge canción -->
+<div class="song-badge" id="songBadge">🎵 Wonderwall · Oasis</div>
+
+<div class="content">
+
+ <!-- PORTADA -->
+ <div class="glass-card fade-section section-1" style="text-align: center;">
+  <h1>Nuestra Historia</h1>
+  <span class="name-stacy">Stacy 💕</span>
+  <div class="subtitle">Desde el 17 · 12 · 2024</div>
+
+  <div class="counter-box" id="loveCounter">
+   <div class="counter-item">
+    <div class="counter-number" id="cnt-days">0</div>
+    <div class="counter-label">Días</div>
+   </div>
+   <div class="counter-item">
+    <div class="counter-number" id="cnt-hours">0</div>
+    <div class="counter-label">Horas</div>
+   </div>
+   <div class="counter-item">
+    <div class="counter-number" id="cnt-minutes">0</div>
+    <div class="counter-label">Minutos</div>
+   </div>
+   <div class="counter-item seconds">
+    <div class="counter-number" id="cnt-seconds">0</div>
+    <div class="counter-label">Segundos</div>
+   </div>
+  </div>
+  <p style="margin-top: 1.2rem; font-style: italic; color: #7a4b58;">✨ Un viaje que apenas comienza ✨</p>
+ </div>
+
+ <!-- CARTA INTERACTIVA -->
+ <div class="glass-card fade-section section-2">
+  <h2 style="text-align: center; margin-bottom: 0.5rem;">Para ti, Stacy</h2>
+  <div class="envelope-wrapper">
+   <div class="envelope" id="envelopeEl">
+    <div class="flap"></div>
+    <div class="letter-content">
+     <p>Mi Stacy bonita,</p>
+     <p>Hoy cumplimos 16 meses de risas, abrazos y esa complicidad que me hace sentir el ser más afortunado. Desde aquel 17 de diciembre supe que algo mágico estaba naciendo.</p>
+     <p>Gracias por cada segundo, por tu luz y por enseñarme un amor tan profundo. Eres mi calma y mi revolución favorita.</p>
+     <p>Te amo con cada latido,<br>siempre tuyo. 💋</p>
+    </div>
+   </div>
+  </div>
+  <p style="text-align: center; margin-top: 0.5rem; font-family: 'Dancing Script';">✨ Toca el sobre para abrirlo ✨</p>
+ </div>
+
+ <!-- GALERÍA -->
+ <div class="glass-card fade-section section-3">
+  <h2 style="text-align: center;">Nuestros Momentos</h2>
+  <div class="gallery-grid">
+   <div class="gallery-item"><img src="img/foto1.jpeg" alt="momento"></div>
+   <div class="gallery-item"><img src="img/foto2.jpeg" alt="momento"></div>
+   <div class="gallery-item"><img src="img/foto3.jpeg" alt="momento"></div>
+   <div class="gallery-item"><img src="img/foto4.jpeg" alt="momento"></div>
+  </div>
+  <p style="text-align: center; margin-top: 1rem; opacity: 0.8; font-family:'Dancing Script'; font-size:1.2rem;">Nuestros recuerdos más dulces ✨</p>
+ </div>
+
+ <!-- BOTÓN MÁGICO -->
+ <div class="glass-card fade-section section-4" style="text-align: center;">
+  <button class="magic-btn" id="magicButton">✨ Descubre la magia ✨</button>
+  <div id="finalMessage" class="final-message">Stacy, eres lo mejor que me ha pasado. ¡Felices 16 meses! 💖</div>
+ </div>
+
+ <div class="fade-section section-5" style="text-align: center; margin-top: 0.5rem; opacity: 0.8;">
+  <span style="font-family: 'Great Vibes'; font-size: 1.4rem;">con todo mi corazón, siempre</span>
+ </div>
+
+</div>
+
+<!-- Botón flotante música -->
+<button class="music-btn" id="musicToggle">
+ <span id="musicIcon">🎵</span>
+ <span class="music-label">Wonderwall</span>
+</button>
+
+<script>
+(function(){
+ "use strict";
+
+ // ===== 1. LLUVIA DE PÉTALOS =====
+ const canvas = document.getElementById('petals-canvas');
+ const ctx = canvas.getContext('2d');
+ let width, height, petals = [];
+ const PETAL_COUNT = 45;
+
+ function initPetals() {
+  petals = [];
+  for (let i = 0; i < PETAL_COUNT; i++) {
+   petals.push({
+    x: Math.random() * width,
+    y: Math.random() * height * 0.8 - 100,
+    size: 8 + Math.random() * 20,
+    speedY: 1.2 + Math.random() * 2.2,
+    speedX: 0.3 - Math.random() * 0.6,
+    rotation: Math.random() * Math.PI * 2,
+    rotSpeed: (Math.random() - 0.5) * 0.02,
+    type: Math.random() > 0.4 ? 'heart' : 'petal',
+    color: `rgba(220, 120, 140, ${0.5 + Math.random()*0.3})`
+   });
+  }
+ }
+
+ function drawHeart(ctx, x, y, size, color, rotation) {
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(rotation); ctx.scale(size/20, size/20);
+  ctx.fillStyle = color; ctx.shadowColor = '#e7a5b3'; ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(-10, -10, -20, 10, 0, 20);
+  ctx.bezierCurveTo(20, 10, 10, -10, 0, 0);
+  ctx.fill(); ctx.shadowBlur = 0; ctx.restore();
+ }
+
+ function drawPetal(ctx, x, y, size, color, rotation) {
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(rotation); ctx.scale(size/16, size/16);
+  ctx.fillStyle = color; ctx.shadowColor = '#d99caa'; ctx.shadowBlur = 10;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 8, 12, 0, 0, Math.PI * 2);
+  ctx.fill(); ctx.shadowBlur = 0; ctx.restore();
+ }
+
+ function animatePetals() {
+  ctx.clearRect(0, 0, width, height);
+  for (let p of petals) {
+   p.y += p.speedY * 0.7; p.x += p.speedX * 0.4; p.rotation += p.rotSpeed;
+   if (p.y > height + 50) { p.y = -40; p.x = Math.random() * width; }
+   if (p.x > width + 30) p.x = -20;
+   if (p.x < -30) p.x = width + 20;
+   if (p.type === 'heart') drawHeart(ctx, p.x, p.y, p.size * 1.6, p.color, p.rotation);
+   else drawPetal(ctx, p.x, p.y, p.size, p.color, p.rotation);
+  }
+  requestAnimationFrame(animatePetals);
+ }
+
+ function resizeCanvas() {
+  width = window.innerWidth; height = window.innerHeight;
+  canvas.width = width; canvas.height = height; initPetals();
+ }
+
+ window.addEventListener('resize', resizeCanvas);
+ resizeCanvas(); animatePetals();
+
+ // ===== 2. CONTADOR VIVO DESDE 17/12/2024 =====
+ const startDate = new Date(2024, 11, 17, 0, 0, 0);
+
+ let prevSeconds = -1;
+ let prevMinutes = -1;
+ let prevHours   = -1;
+ let prevDays    = -1;
+
+ function animateTick(el) {
+  el.classList.remove('tick');
+  void el.offsetWidth;
+  el.classList.add('tick');
+  setTimeout(() => el.classList.remove('tick'), 400);
+ }
+
+ function updateCounter() {
+  const now = new Date();
+  const diff = now - startDate;
+
+  const totalSec  = Math.floor(diff / 1000);
+  const seconds   = totalSec % 60;
+  const totalMin  = Math.floor(totalSec / 60);
+  const minutes   = totalMin % 60;
+  const totalHrs  = Math.floor(totalMin / 60);
+  const hours     = totalHrs % 24;
+  const days      = Math.floor(totalHrs / 24);
+
+  const elDays = document.getElementById('cnt-days');
+  const elHours = document.getElementById('cnt-hours');
+  const elMins  = document.getElementById('cnt-minutes');
+  const elSecs  = document.getElementById('cnt-seconds');
+
+  if (days !== prevDays) { elDays.textContent = days; animateTick(elDays); prevDays = days; }
+  if (hours !== prevHours) { elHours.textContent = String(hours).padStart(2,'0'); animateTick(elHours); prevHours = hours; }
+  if (minutes !== prevMinutes) { elMins.textContent = String(minutes).padStart(2,'0'); animateTick(elMins); prevMinutes = minutes; }
+  if (seconds !== prevSeconds) { elSecs.textContent = String(seconds).padStart(2,'0'); animateTick(elSecs); prevSeconds = seconds; }
+ }
+
+ updateCounter();
+ setInterval(updateCounter, 250);
+
+ // ===== 3. SOBRE INTERACTIVO =====
+ document.getElementById('envelopeEl').addEventListener('click', function(e) {
+  e.stopPropagation();
+  this.classList.toggle('open');
+ });
+
+ // ===== 4. BOTÓN MÁGICO =====
+ const magicBtn = document.getElementById('magicButton');
+ const finalMsg = document.getElementById('finalMessage');
+
+ magicBtn.addEventListener('click', function() {
+  confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 }, startVelocity: 25, colors: ['#f5c6d0','#e7a1b0','#d28b9a','#fbe3e8','#c2848f'] });
+  setTimeout(() => {
+   confetti({ particleCount: 120, spread: 70, origin: { y: 0.5, x: 0.3 }, colors: ['#fadadd','#eebbc5','#d997a5'] });
+   confetti({ particleCount: 120, spread: 70, origin: { y: 0.5, x: 0.7 }, colors: ['#f5d0d9','#dea5b2','#c2848f'] });
+  }, 150);
+  setTimeout(() => confetti({ particleCount: 200, spread: 120, origin: { y: 0.4 } }), 300);
+  finalMsg.classList.add('show');
+ });
+
+ // ===== 5. MÚSICA CON MP3 LOCAL (musica/wonderwall.mp3) =====
+ const audio = new Audio('musica/wonderwall.mp3');
+ audio.loop = true;
+ audio.volume = 0.4;
+ 
+ let isPlaying = false;
+ const musicBtn = document.getElementById('musicToggle');
+ const musicIcon = document.getElementById('musicIcon');
+ const songBadge = document.getElementById('songBadge');
+ 
+ function setPlayingUI(playing) {
+  isPlaying = playing;
+  if (playing) {
+   musicBtn.classList.add('playing');
+   if (musicIcon) musicIcon.textContent = '🎶';
+   songBadge.classList.add('show');
+   setTimeout(() => songBadge.classList.remove('show'), 3500);
+  } else {
+   musicBtn.classList.remove('playing');
+   if (musicIcon) musicIcon.textContent = '🎵';
+  }
+ }
+ 
+ function playMusic() {
+  audio.play().then(() => {
+   setPlayingUI(true);
+  }).catch(e => {
+   console.log("Error al reproducir:", e);
+  });
+ }
+ 
+ function pauseMusic() {
+  audio.pause();
+  setPlayingUI(false);
+ }
+ 
+ musicBtn.addEventListener('click', function(e) {
+  e.stopPropagation();
+  if (isPlaying) {
+   pauseMusic();
+  } else {
+   playMusic();
+  }
+ });
+ 
+ // Al primer clic en cualquier parte, la música empieza (si no está sonando)
+ document.body.addEventListener('click', function iniciarMusica() {
+  if (!isPlaying) {
+   playMusic();
+  }
+ }, { once: true });
+ 
+ console.log('%c💖 Felices 16 meses, Stacy 💖', 'font-size:18px; background:#f8d5dd; color:#5e2e3c; padding:8px 16px; border-radius:20px;');
+})();
+</script>
+
+</body>
+</html>
